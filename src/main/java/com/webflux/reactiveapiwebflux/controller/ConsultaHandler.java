@@ -1,22 +1,30 @@
 package com.webflux.reactiveapiwebflux.controller;
 
+import com.webflux.reactiveapiwebflux.entity.ConsultaCpfCnpj;
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.request.ConsultaCpfCnpjRequest;
 import com.webflux.reactiveapiwebflux.service.ConsultaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 import java.util.function.Function;
 
 @Component
 public class ConsultaHandler {
 
-    @Autowired
-    private ConsultaService consultaService;
+    private final Scheduler scheduler;
+    private final ConsultaService consultaService;
+
+    public ConsultaHandler(Scheduler scheduler, ConsultaService consultaService) {
+        this.scheduler = scheduler;
+        this.consultaService = consultaService;
+    }
 
     public Mono<ServerResponse> consultaByCpfCnpj(ServerRequest request) {
         return createObjectRequest(request)
@@ -28,6 +36,12 @@ public class ConsultaHandler {
                     return ServerResponse.badRequest().bodyValue(e.getMessage());
                 })
                 .onErrorResume(treatGenericError());
+    }
+
+    public Mono<ServerResponse> findAllConsulta(ServerRequest request) {
+        var consultas = Flux
+                .defer(() -> Flux.fromIterable(consultaService.getAllConsulta())).subscribeOn(scheduler);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(consultas, ConsultaCpfCnpj.class);
     }
 
     private Function<Throwable, Mono<ServerResponse>> treatGenericError() {

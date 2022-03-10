@@ -6,4 +6,9 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+
+jdbc:
+  connection:
+    pool:
+      size: 5
