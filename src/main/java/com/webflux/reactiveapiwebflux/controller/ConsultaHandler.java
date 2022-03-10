@@ -3,7 +3,7 @@ package com.webflux.reactiveapiwebflux.controller;
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.request.ConsultaCpfCnpjRequest;
 import com.webflux.reactiveapiwebflux.service.ConsultaService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -13,12 +13,12 @@ import reactor.core.publisher.Mono;
 import java.util.function.Function;
 
 @Component
-@RequiredArgsConstructor
 public class ConsultaHandler {
 
-    private final ConsultaService consultaService;
+    @Autowired
+    private ConsultaService consultaService;
 
-    public Mono<ServerResponse> consultaCpfCnpj(ServerRequest request) {
+    public Mono<ServerResponse> consultaByCpfCnpj(ServerRequest request) {
         return createObjectRequest(request)
                 .flatMap(consultaRequest -> consultaService.getConsultaByCpfCnpj(consultaRequest.getCpfCnpj()))
                 .flatMap(consulta -> {

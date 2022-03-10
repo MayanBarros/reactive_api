@@ -18,6 +18,6 @@ public class ConsultaRouter {
         return RouterFunctions
                 .route(
                         GET("/consulta/{cpfCnpj}")
-                        .and(accept(MediaType.APPLICATION_JSON)), handler::consultaCpfCnpj);
+                        .and(accept(MediaType.APPLICATION_JSON)), handler::consultaByCpfCnpj);
     }
 }

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConsultaRepository extends CrudRepository<ConsultaCpfCnpj, Integer> {
+    public ConsultaCpfCnpj findByCpfCnpj(String cpfCnpj);
 }
