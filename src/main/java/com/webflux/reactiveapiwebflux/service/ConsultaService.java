@@ -8,15 +8,21 @@ import reactor.core.publisher.Mono;
 @Service
 public class ConsultaService {
 
-    public Mono<ConsultaCpfCnpj> getConsulta(String cpf) throws CpfCnpjNotValidException {
-        // falta um método para diferenciar um Cpf de um Cnpj
-        return validCpf(cpf).flatMap(isValid -> {
-            if(isValid) {
-                return Mono.just(new ConsultaCpfCnpj());
-            } else {
-                throw new CpfCnpjNotValidException();
-            }
-        });
+    public Mono<ConsultaCpfCnpj> getConsultaByCpfCnpj(String cpfCnpj) throws CpfCnpjNotValidException {
+        return validCpfCnpj(cpfCnpj)
+                .flatMap(isValid -> {
+                    if (isValid) {
+                        return Mono.just(new ConsultaCpfCnpj());
+                    } else {
+                        throw new CpfCnpjNotValidException("CPF/CNPJ is not valid!");
+                    }
+                });
+    }
+
+    private Mono<Boolean> validCpfCnpj(String cpfCnpj) {
+        if (cpfCnpj.length() == 11) return validCpf(cpfCnpj);
+        else if (cpfCnpj.length() == 14) return validCnpj(cpfCnpj);
+        else throw new CpfCnpjNotValidException("Must contain 11 or 14 digits!");
     }
 
     public Mono<Boolean> validCpf(String CPF) {
@@ -62,43 +68,43 @@ public class ConsultaService {
         char dig13, dig14;
         int sm, i, r, num, peso;
 
-            sm = 0;
-            peso = 2;
-            for (i = 11; i >= 0; i--) {
+        sm = 0;
+        peso = 2;
+        for (i = 11; i >= 0; i--) {
 
-                num = CNPJ.charAt(i) - 48;
-                sm += (num * peso);
-                peso = peso + 1;
-                if (peso == 10)
-                    peso = 2;
-            }
+            num = CNPJ.charAt(i) - 48;
+            sm += (num * peso);
+            peso = peso + 1;
+            if (peso == 10)
+                peso = 2;
+        }
 
-            r = sm % 11;
-            if ((r == 0) || (r == 1))
-                dig13 = '0';
-            else dig13 = (char) ((11 - r) + 48);
+        r = sm % 11;
+        if ((r == 0) || (r == 1))
+            dig13 = '0';
+        else dig13 = (char) ((11 - r) + 48);
 
-            sm = 0;
-            peso = 2;
-            for (i = 12; i >= 0; i--) {
-                num = CNPJ.charAt(i) - 48;
-                sm = sm + (num * peso);
-                peso = peso + 1;
-                if (peso == 10)
-                    peso = 2;
-            }
+        sm = 0;
+        peso = 2;
+        for (i = 12; i >= 0; i--) {
+            num = CNPJ.charAt(i) - 48;
+            sm = sm + (num * peso);
+            peso = peso + 1;
+            if (peso == 10)
+                peso = 2;
+        }
 
-            r = sm % 11;
-            if ((r == 0) || (r == 1))
-                dig14 = '0';
-            else dig14 = (char) ((11 - r) + 48);
+        r = sm % 11;
+        if ((r == 0) || (r == 1))
+            dig14 = '0';
+        else dig14 = (char) ((11 - r) + 48);
 
 
         if ((dig13 == CNPJ.charAt(12)) && (dig14 == CNPJ.charAt(13))) return Mono.just(Boolean.TRUE);
         else return Mono.just(Boolean.FALSE);
     }
 
-    private boolean fistCpfValidation(String CPF) {
+    private Boolean fistCpfValidation(String CPF) {
         return CPF.equals("00000000000") || CPF.equals("11111111111") ||
                 CPF.equals("22222222222") || CPF.equals("33333333333") ||
                 CPF.equals("44444444444") || CPF.equals("55555555555") ||
@@ -107,7 +113,7 @@ public class ConsultaService {
                 (CPF.length() != 11);
     }
 
-    private boolean fistCnpjValidation(String CNPJ) {
+    private Boolean fistCnpjValidation(String CNPJ) {
         return CNPJ.equals("00000000000000") || CNPJ.equals("11111111111111") ||
                 CNPJ.equals("22222222222222") || CNPJ.equals("33333333333333") ||
                 CNPJ.equals("44444444444444") || CNPJ.equals("55555555555555") ||

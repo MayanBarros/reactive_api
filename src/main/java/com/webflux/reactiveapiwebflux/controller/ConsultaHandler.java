@@ -20,12 +20,12 @@ public class ConsultaHandler {
 
     public Mono<ServerResponse> consultaCpfCnpj(ServerRequest request) {
         return createObjectRequest(request)
-                .flatMap(consultaRequest -> consultaService.getConsulta(consultaRequest.getCpfCnpj()))
+                .flatMap(consultaRequest -> consultaService.getConsultaByCpfCnpj(consultaRequest.getCpfCnpj()))
                 .flatMap(consulta -> {
                     return ServerResponse.ok().bodyValue(consulta);
                 })
                 .onErrorResume(CpfCnpjNotValidException.class, e -> {
-                    return ServerResponse.badRequest().build();
+                    return ServerResponse.badRequest().bodyValue(e.getMessage());
                 })
                 .onErrorResume(treatGenericError());
     }
