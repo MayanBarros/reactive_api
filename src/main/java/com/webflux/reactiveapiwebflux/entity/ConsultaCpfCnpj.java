@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,16 +26,16 @@ public class ConsultaCpfCnpj {
 
     @NotBlank(message = "CPF/CNPJ cannot be blank!")
     @Column(name = "cpf_cnpj")
-    @Min(value = 11)
-    @Min(value = 14)
     private String cpfCnpj;
 
     @Column(name = "result")
     private Boolean result;
 
     @Column(name = "create_date")
-    private Date createDate;
+    @CreationTimestamp
+    private LocalDateTime createDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    @UpdateTimestamp
+    private LocalDateTime updateDate;
 }

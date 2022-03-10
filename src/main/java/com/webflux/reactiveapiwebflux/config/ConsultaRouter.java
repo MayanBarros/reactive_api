@@ -27,6 +27,7 @@ public class ConsultaRouter {
     public RouterFunction<ServerResponse> route(ConsultaHandler handler) {
         return RouterFunctions.route(
                         GET("/consulta/{cpfCnpj}").and(accept(MediaType.APPLICATION_JSON)), handler::consultaByCpfCnpj)
-                .andRoute(GET("/consulta").and(accept(MediaType.APPLICATION_JSON)), handler::findAllConsulta);
+                .andRoute(GET("/consulta").and(accept(MediaType.APPLICATION_JSON)), handler::findAllConsulta)
+                .andRoute(POST("/consulta").and(accept(MediaType.APPLICATION_JSON)), handler::saveConsulta);
     }
 }

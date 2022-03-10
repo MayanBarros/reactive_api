@@ -7,6 +7,7 @@ import com.webflux.reactiveapiwebflux.service.ConsultaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
@@ -42,6 +43,21 @@ public class ConsultaHandler {
         var consultas = Flux
                 .defer(() -> Flux.fromIterable(consultaService.getAllConsulta())).subscribeOn(scheduler);
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(consultas, ConsultaCpfCnpj.class);
+    }
+
+    public Mono<ServerResponse> saveConsulta(ServerRequest request) {
+        return request
+                .bodyToMono(ConsultaCpfCnpj.class)
+                .flatMap(consulta -> consultaService.saveNewConsulta(consulta))
+                .publishOn(scheduler)
+                .flatMap(consulta -> ServerResponse
+                        .ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(consulta))
+                .onErrorResume(CpfCnpjNotValidException.class, e -> {
+                    return ServerResponse.badRequest().bodyValue(e.getMessage());
+                })
+                .onErrorResume(treatGenericError());
     }
 
     private Function<Throwable, Mono<ServerResponse>> treatGenericError() {
