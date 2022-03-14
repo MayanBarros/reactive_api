@@ -9,6 +9,8 @@ ALTER TABLE consulta_cpf_cnpj ADD create_date TIMESTAMP DEFAULT CURRENT_TIMESTAM
 
 ALTER TABLE consulta_cpf_cnpj ADD update_date TIMESTAMP;
 
+ALTER TABLE consulta_cpf_cnpj ADD unique(cpf_cnpj);
+
 SELECT * FROM consulta_cpf_cnpj;
 
 
