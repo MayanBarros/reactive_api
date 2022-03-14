@@ -26,10 +26,11 @@ public class ConsultaRouter {
     @Bean
     public RouterFunction<ServerResponse> route(ConsultaHandler handler) {
         return RouterFunctions.route(
-                        GET("/consulta/{cpfCnpj}").and(accept(MediaType.APPLICATION_JSON)), handler::consultaByCpfCnpj)
+                        GET("/consulta/valid/{cpfCnpj}").and(accept(MediaType.APPLICATION_JSON)), handler::consultaByCpfCnpj)
                 .andRoute(GET("/consulta").and(accept(MediaType.APPLICATION_JSON)), handler::findAllConsulta)
                 .andRoute(GET("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::consultaById)
                 .andRoute(POST("/consulta").and(accept(MediaType.APPLICATION_JSON)), handler::saveConsulta)
+                .andRoute(PUT("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::updateConsulta)
                 .andRoute(DELETE("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::deleteConsultaById);
     }
 }

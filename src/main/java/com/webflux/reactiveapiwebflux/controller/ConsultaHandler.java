@@ -61,7 +61,7 @@ public class ConsultaHandler {
 
     public Mono<ServerResponse> consultaById(ServerRequest request) {
         var id = request.pathVariable("id");
-        return consultaService.getConsultaById(Integer.parseInt(id))
+        return consultaService.getConsultaById(Long.parseLong(id))
                 .flatMap(consulta -> ServerResponse
                         .ok()
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +71,7 @@ public class ConsultaHandler {
 
     public Mono<ServerResponse> deleteConsultaById(ServerRequest request) {
         var consultaId = request.pathVariable("id");
-        var existingConsulta = consultaService.getConsultaById(Integer.valueOf(consultaId));
+        var existingConsulta = consultaService.getConsultaById(Long.parseLong(consultaId));
         return existingConsulta
                 .flatMap(consulta -> consultaService.deleteConsultaById(consultaId))
                 .then(ServerResponse.noContent().build());
@@ -93,5 +93,19 @@ public class ConsultaHandler {
                 .cpfCnpj(request.pathVariable("cpfCnpj"))
                 .build();
         return Mono.just(consultaRequest);
+    }
+
+    public Mono<ServerResponse> updateConsulta(ServerRequest request) {
+        var consultaId = request.pathVariable("id");
+        var existingConsulta = consultaService.getConsultaById(Long.parseLong(consultaId));
+        return existingConsulta
+                .flatMap(consulta -> request.bodyToMono(ConsultaCpfCnpj.class)
+                        .map(reqConsulta -> {
+                            consulta.setCpfCnpj(reqConsulta.getCpfCnpj());
+                            consulta.setResult(Boolean.TRUE);
+                            return consulta;
+                        })
+                        .flatMap(consultaService::updateConsulta)
+                        .flatMap(savedConsulta -> ServerResponse.ok().bodyValue(savedConsulta)));
     }
 }
