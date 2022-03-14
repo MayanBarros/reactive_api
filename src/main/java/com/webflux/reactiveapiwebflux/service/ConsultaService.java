@@ -1,6 +1,7 @@
 package com.webflux.reactiveapiwebflux.service;
 
 import com.webflux.reactiveapiwebflux.entity.ConsultaCpfCnpj;
+import com.webflux.reactiveapiwebflux.exception.ConsultaNotFindException;
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.repository.ConsultaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,12 @@ public class ConsultaService {
                         throw new CpfCnpjNotValidException("CPF/CNPJ is not valid!");
                     }
                 });
+    }
+
+    public Mono<ConsultaCpfCnpj> getConsultaById(Integer id) {
+        return Mono.just(consultaRepository.
+                findById(id)
+                .orElseThrow());
     }
 
     public List<ConsultaCpfCnpj> getAllConsulta() {
@@ -143,6 +150,11 @@ public class ConsultaService {
                 CNPJ.equals("66666666666666") || CNPJ.equals("77777777777777") ||
                 CNPJ.equals("88888888888888") || CNPJ.equals("99999999999999") ||
                 (CNPJ.length() != 14);
+    }
+
+    public Mono<Void> deleteConsultaById(String id) {
+        consultaRepository.deleteById(Integer.valueOf(id));
+        return Mono.empty();
     }
 }
 
