@@ -4,6 +4,7 @@ import com.webflux.reactiveapiwebflux.entity.ConsultaCpfCnpj;
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.request.ConsultaCpfCnpjRequest;
 import com.webflux.reactiveapiwebflux.service.ConsultaService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -45,9 +46,9 @@ public class ConsultaHandler {
     }
 
     public Mono<ServerResponse> saveConsulta(ServerRequest request) {
-        return request
-                .bodyToMono(ConsultaCpfCnpj.class)
-                .flatMap(consulta -> consultaService.saveNewConsulta(consulta))
+        var reqBodyMono = request.bodyToMono(ConsultaCpfCnpj.class);
+        return reqBodyMono
+                .flatMap(consultaService::saveNewConsulta)
                 .publishOn(scheduler)
                 .flatMap(consulta -> ServerResponse
                         .ok()
@@ -57,6 +58,27 @@ public class ConsultaHandler {
                     return ServerResponse.badRequest().bodyValue(e.getMessage());
                 })
                 .onErrorResume(treatGenericError());
+    }
+
+    public Mono<ServerResponse> updateConsulta(ServerRequest request) {
+        var consultaId = request.pathVariable("id");
+        var existingConsulta = consultaService.getConsultaById(Long.parseLong(consultaId));
+        return existingConsulta
+                .flatMap(consulta -> request.bodyToMono(ConsultaCpfCnpj.class)
+                        .map(reqConsulta -> {
+                            consulta.setCpfCnpj(reqConsulta.getCpfCnpj());
+                            consulta.setResult(Boolean.TRUE);
+                            return consulta;
+                        })
+                        .flatMap(consultaService::updateConsulta)
+                        .flatMap(savedConsulta -> ServerResponse.ok().bodyValue(savedConsulta)))
+                .onErrorResume(DataIntegrityViolationException.class, e -> {
+                    return existingConsulta
+                            .flatMap(c -> consultaService.getConsultaByCpfCnpj(c.getCpfCnpj()))
+                            .flatMap(consultaService::updateConsulta)
+                            .flatMap(c -> ServerResponse.ok().bodyValue(c));
+
+                });
     }
 
     public Mono<ServerResponse> consultaById(ServerRequest request) {
@@ -77,8 +99,6 @@ public class ConsultaHandler {
                 .then(ServerResponse.noContent().build());
     }
 
-
-
     private Function<Throwable, Mono<ServerResponse>> treatGenericError() {
         return error -> {
             return ServerResponse
@@ -93,19 +113,5 @@ public class ConsultaHandler {
                 .cpfCnpj(request.pathVariable("cpfCnpj"))
                 .build();
         return Mono.just(consultaRequest);
-    }
-
-    public Mono<ServerResponse> updateConsulta(ServerRequest request) {
-        var consultaId = request.pathVariable("id");
-        var existingConsulta = consultaService.getConsultaById(Long.parseLong(consultaId));
-        return existingConsulta
-                .flatMap(consulta -> request.bodyToMono(ConsultaCpfCnpj.class)
-                        .map(reqConsulta -> {
-                            consulta.setCpfCnpj(reqConsulta.getCpfCnpj());
-                            consulta.setResult(Boolean.TRUE);
-                            return consulta;
-                        })
-                        .flatMap(consultaService::updateConsulta)
-                        .flatMap(savedConsulta -> ServerResponse.ok().bodyValue(savedConsulta)));
     }
 }
