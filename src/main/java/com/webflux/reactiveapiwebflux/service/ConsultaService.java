@@ -4,7 +4,6 @@ import com.webflux.reactiveapiwebflux.entity.ConsultaCpfCnpj;
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.repository.ConsultaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -42,7 +41,6 @@ public class ConsultaService {
 
     public Mono<ConsultaCpfCnpj> saveNewConsulta(ConsultaCpfCnpj newConsulta) {
         var cpfCnpj = newConsulta.getCpfCnpj();
-
         return validCpfCnpjService.validCpfCnpj(cpfCnpj)
                 .flatMap(isValid -> {
                     if (isValid) {
