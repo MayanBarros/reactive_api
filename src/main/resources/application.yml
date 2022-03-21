@@ -8,6 +8,11 @@ spring:
     hibernate:
       ddl-auto: update
 
+  thymeleaf:
+    reactive:
+      max-chunk-size:
+        8192
+
 jdbc:
   connection:
     pool:

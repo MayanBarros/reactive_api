@@ -14,6 +14,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -42,7 +44,14 @@ public class ConsultaHandler {
     public Mono<ServerResponse> findAllConsulta(ServerRequest request) {
         var consultas = Flux
                 .defer(() -> Flux.fromIterable(consultaService.getAllConsulta())).subscribeOn(scheduler);
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(consultas, ConsultaCpfCnpj.class);
+        // set model attributes
+        Map<String, Object> model = new HashMap<>();
+        model.put("consultas", consultas);
+
+        return ServerResponse
+                .status(HttpStatus.OK)
+                .contentType(MediaType.TEXT_HTML)
+                .render("index", model);
     }
 
     public Mono<ServerResponse> saveConsulta(ServerRequest request) {
@@ -96,7 +105,7 @@ public class ConsultaHandler {
         var existingConsulta = consultaService.getConsultaById(Long.parseLong(consultaId));
         return existingConsulta
                 .flatMap(consulta -> consultaService.deleteConsultaById(consultaId))
-                .then(ServerResponse.noContent().build());
+                .then(ServerResponse.status(HttpStatus.NO_CONTENT).render("redirect:/consulta"));
     }
 
     private Function<Throwable, Mono<ServerResponse>> treatGenericError() {

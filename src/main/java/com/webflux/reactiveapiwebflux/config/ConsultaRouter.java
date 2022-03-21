@@ -31,6 +31,7 @@ public class ConsultaRouter {
                 .andRoute(GET("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::consultaById)
                 .andRoute(POST("/consulta").and(accept(MediaType.APPLICATION_JSON)), handler::saveConsulta)
                 .andRoute(PUT("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::updateConsulta)
-                .andRoute(DELETE("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::deleteConsultaById);
+                .andRoute(DELETE("/consulta/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::deleteConsultaById)
+                .andRoute(GET("/consulta/delete/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::deleteConsultaById);
     }
 }
