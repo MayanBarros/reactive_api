@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://thymeleaf.org"
+      layout:decorator="layout">
+
+<div layout:fragment="body-page">
+        <div class="alert alert-danger" th:if="${#lists.isEmpty(contracts)}">No contracts found!</div>
+        <div class="alert alert-primary" th:if="${message != null && message != 'value'}" th:text="${message}"></div>
+        <table id="allContracts" class="table table-striped">
+            <thead>
+            <tr>
+                <th width="10%">ID</th>
+                <th>CPF/CNPJ</th>
+                <th>Created Date</th>
+                <th>Updated Date</th>
+                <th>Total Contract Value</th>
+                <th>Options</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="contract : ${contracts}">
+                <td th:text="${contract.id}"></td>
+                <td th:text="${contract.cpfCnpj}"></td>
+                <td th:text="${#temporals.format(contract.createDate, 'dd-MM-yyyy HH:mm')}"></td>
+                <td th:text="${#temporals.format(contract.updateDate, 'dd-MM-yyyy HH:mm')}"></td>
+                <td th:text="${contract.totalCashValue}"></td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{/contract/edit/{id}(id = ${contract.id})}" type="button">Edit
+                        Consult</a>
+                    <a class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="|#myModal${contract.id}|"
+                       type="button">Delete</a>
+                    <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade"
+                         tabindex="-1" th:id="|myModal${contract.id}|">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="myModalLabel">Delete consult</h5>
+                                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                            type="button"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Delete this consult?
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel
+                                    </button>
+                                    <a class="btn btn-danger" th:href="@{/consult/delete/{id}(id = ${contract.id})}" type="button">OK</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+</div>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br" layout:decorate="~{layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://thymeleaf.org"
+>
+<div layout:fragment="body-page">
+    <div class="alert alert-primary" th:if="${message != null}" th:text="${message}"></div>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">New Contract</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" th:action="@{/contract}" th:object="${contract}">
+                <input th:field="*{id}" type="hidden">
+                <div class="form-group mb-3">
+                    <label class="form-label" for="cpfCnpj">CPF/CNPJ:</label>
+                    <input class="form-control" id="cpfCnpj" required th:field="*{cpfCnpj}" type="text">
+                    <div class="text-danger" th:errors="*{cpfCnpj}" th:if="${#fields.hasErrors('cpfCnpj')}"></div>
+                </div>
+                <button class="btn btn-primary" type="submit">Save Contract</button>
+            </form>
+        </div>
+    </div>
+</div>
+</html>
