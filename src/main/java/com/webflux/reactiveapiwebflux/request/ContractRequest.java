@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConsultaCpfCnpjRequest {
+public class ContractRequest {
     private String cpfCnpj;
 }

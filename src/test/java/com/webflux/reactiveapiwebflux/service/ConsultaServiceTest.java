@@ -8,7 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class ConsultaServiceTest {
 
     @InjectMocks
-    private ConsultaService clientService;
+    private ContractService clientService;
 
 //    @Test
 //    void testMethodWithCpfValid() {
