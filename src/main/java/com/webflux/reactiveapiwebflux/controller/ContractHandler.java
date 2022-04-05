@@ -63,32 +63,26 @@ public class ContractHandler {
     }
 
     public Mono<ServerResponse> saveContract(ServerRequest request) {
+        Map<String, Object> model = new HashMap<>();
         var reqBodyMono = request.formData();
-        //var reqContract = formDataToEmployee(reqBodyMono);
-        return reqBodyMono.map(this::formDataToEmployee)
+        return reqBodyMono.map(this::formDataToContract)
                 .flatMap(contractService::saveNewContract)
                 .publishOn(scheduler)
                 .flatMap(contract -> {
                     return ServerResponse.status(HttpStatus.CREATED).contentType(MediaType.TEXT_HTML).render("redirect:/contract");
                 })
-                .onErrorResume(CpfCnpjNotValidException.class, ServerResponse.status(HttpStatus.BAD_REQUEST)::bodyValue);
-                //.onErrorResume(treatGenericError());
+                .onErrorResume(CpfCnpjNotValidException.class, e -> {
+                    model.put("message", e.getMessage());
+                    model.put("contract", new Contract());
+                    return ServerResponse.status(HttpStatus.BAD_REQUEST).render("form", model);
+                })
+                .onErrorResume(treatGenericError());
     }
 
     public Mono<ServerResponse> newContract(ServerRequest request) {
         Map<String, Object> model = new HashMap<>();
         model.put("contract", new Contract());
         return ServerResponse.ok().contentType(MediaType.TEXT_HTML).render("form", model);
-    }
-
-    public Mono<ServerResponse> editContract(ServerRequest request) {
-        return request.formData()
-                .map(this::formDataToEmployee)
-                .flatMap(contract -> {
-                    Map<String, Object> model = new HashMap<>();
-                    model.put("contract", contract);
-                    return ServerResponse.ok().contentType(MediaType.TEXT_HTML).render("form", model);
-                });
     }
 
     public Mono<ServerResponse> updateContract(ServerRequest request) {
@@ -111,6 +105,26 @@ public class ContractHandler {
                 });
     }
 
+    public Mono<ServerResponse> editContract(ServerRequest request) {
+        Map<String, Object> model = new HashMap<>();
+        var contractId = request.pathVariable("id");
+        var existingContract = contractService.getContractById(Long.parseLong(contractId));
+        return existingContract
+                .flatMap(savedContract -> {
+                    model.put("contract", savedContract);
+                    return ServerResponse.status(HttpStatus.CREATED).render("form", model);
+                    });
+//                .onErrorResume(DataIntegrityViolationException.class, e -> {
+//                    return existingContract
+//                            .flatMap(c -> contractService.getContractByCpfCnpj(c.getCpfCnpj()))
+//                            .flatMap(contractService::updateContract)
+//                            .flatMap(c -> {
+//                                model.put("contract", c);
+//                                return ServerResponse.status(HttpStatus.CREATED).render("form", model);
+//                            });
+//                });
+    }
+
     public Mono<ServerResponse> contractById(ServerRequest request) {
         var id = request.pathVariable("id");
         Map<String, Object> model = new HashMap<>();
@@ -129,7 +143,7 @@ public class ContractHandler {
         var contractId = request.pathVariable("id");
         var existingContract = contractService.getContractById(Long.parseLong(contractId));
         return existingContract
-                .flatMap(contract -> contractService.deleteContractById(contractId))
+                .flatMap(contractService::deleteContract)
                 .then(ServerResponse.status(HttpStatus.NO_CONTENT).render("redirect:/contract"));
     }
 
@@ -153,7 +167,7 @@ public class ContractHandler {
         return Mono.just(contractRequest);
     }
 
-    private Contract formDataToEmployee(MultiValueMap<String, String> formData) {
+    private Contract formDataToContract(MultiValueMap<String, String> formData) {
         Contract contract = new Contract();
         var map = formData.toSingleValueMap();
         contract.setCpfCnpj(map.get("cpfCnpj"));

@@ -67,5 +67,10 @@ public class ContractService {
         contractRepository.deleteById(Long.valueOf(id));
         return Mono.empty();
     }
+
+    public Mono<Void> deleteContract(Contract contract) {
+        contractRepository.delete(contract);
+        return Mono.empty();
+    }
 }
 
