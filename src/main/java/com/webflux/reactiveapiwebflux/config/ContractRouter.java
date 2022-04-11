@@ -28,14 +28,14 @@ public class ContractRouter {
         return route()
                 .GET("/contract/find/{cpfCnpj}", handler::contractByCpfCnpj)
 
-                .POST("/contract", accept(MediaType.APPLICATION_FORM_URLENCODED), handler::saveContract)
+                //.POST("/contract", accept(MediaType.APPLICATION_FORM_URLENCODED), handler::saveContract)
                 .GET("/contract", handler::findAllContract)
                 .GET("/contract/{id}", handler::contractById)
                 .PUT("/contract/{id}", handler::updateContract)
                 .DELETE("/contract/{id}", handler::deleteContractById)
 
                 .GET("/contract/delete/{id}", handler::deleteContractById)
-                .GET("/contract/edit/{id}", handler::editContract)
+                //.GET("/contract/edit/{id}", handler::editContract)
                 .GET("/contract-new", handler::newContract)
                 .build();
     }

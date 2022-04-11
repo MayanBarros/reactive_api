@@ -4,8 +4,9 @@
       xmlns:th="http://thymeleaf.org"
 >
 <div layout:fragment="body-page">
-    <div class="alert alert-primary" th:if="${message != null}" th:text="${message}"></div>
-    <div class="card">
+    <div class="alert alert-danger" th:if="${message != null}" th:text="${message}"></div>
+    <div class="alert alert-success" th:if="${messageOk != null}" th:text="${messageOk}"></div>
+    <div class="card text-white bg-success mb-3">
         <div class="card-header">
             <h5 class="card-title">New Contract</h5>
         </div>
@@ -15,7 +16,32 @@
                 <div class="form-group mb-3">
                     <label class="form-label" for="cpfCnpj">CPF/CNPJ:</label>
                     <input class="form-control" id="cpfCnpj" required th:field="*{cpfCnpj}" type="text">
-                    <div class="text-danger" th:errors="*{cpfCnpj}" th:if="${#fields.hasErrors('cpfCnpj')}"></div>
+                </div>
+                <table id='myTable' class="table table-dark">
+                    <thead>
+                    <tr>
+                        <th width="10%">Id</th>
+                        <th>Number Duplicata</th>
+                        <th>Cash Value</th>
+                        <th>Options</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item, iter : *{contractItem}">
+                        <td th:text="${item.id}" th:field="*{contractItem[__${iter.index}__].id}"></td>
+                        <td><input th:value="${item.numberDuplicata}" th:field="*{contractItem[__${iter.index}__].numberDuplicata}" min="1"/></td>
+                        <td><input th:value="${item.cashValue}" th:field="*{contractItem[__${iter.index}__].cashValue}" min="0.01" step="0.01"/></td>
+                        <td><input name=remove class='btn btn-danger btn-sm' type=button value=X onClick=deleteRow(this);>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="card-body mt-3">
+                    <input class='btn btn-primary btn-sm' type="button" value="+" onClick="addRow()"/>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" for="totalCashValue">Total Cash Value:</label>
+                    <input class="form-control" id="totalCashValue" required th:field="*{totalCashValue}" type="text">
                 </div>
                 <button class="btn btn-primary" type="submit">Save Contract</button>
             </form>

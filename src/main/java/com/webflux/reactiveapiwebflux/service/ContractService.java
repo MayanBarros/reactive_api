@@ -19,7 +19,7 @@ public class ContractService {
     private ValidCpfCnpjService validCpfCnpjService;
 
     public Mono<Contract> getContractByCpfCnpj(String cpfCnpj) throws CpfCnpjNotValidException {
-        return validCpfCnpjService.validCpfCnpj(cpfCnpj)
+        return Mono.just(validCpfCnpjService.validCpfCnpj(cpfCnpj))
                 .flatMap(isValid -> {
                     if (isValid) {
                         return Mono.just(contractRepository.findByCpfCnpj(cpfCnpj));
@@ -35,29 +35,62 @@ public class ContractService {
                 .orElseThrow());
     }
 
+    public Contract getEditContractById(Long id) {
+        return contractRepository.
+                findById(id)
+                .orElseThrow();
+    }
+
     public List<Contract> getAllContract() {
         return contractRepository.findAll();
     }
 
-    public Mono<Contract> saveNewContract(Contract newContract) {
+    public Contract saveNewContract(Contract newContract) {
         var cpfCnpj = newContract.getCpfCnpj();
-        return validCpfCnpjService.validCpfCnpj(cpfCnpj)
-                .flatMap(isValid -> {
-                    if (isValid) {
-                        var exits = contractRepository.findByCpfCnpj(cpfCnpj);
-                        if (exits != null) {
-                            newContract.setId(exits.getId());
-                            newContract.setResult(true);
-                            newContract.setCreateDate(exits.getCreateDate());
-                            Mono.just(contractRepository.save(newContract));
-                        }
-                        newContract.setResult(true);
-                        return Mono.just(contractRepository.save(newContract));
-                    } else {
-                        throw new CpfCnpjNotValidException("CPF/CNPJ is not valid!");
-                    }
-                });
+        if (validCpfCnpjService.validCpfCnpj(cpfCnpj)) {
+            var exits = contractRepository.findByCpfCnpj(cpfCnpj);
+            if (exits != null) {
+                newContract.setId(exits.getId());
+                newContract.setResult(true);
+                newContract.setCreateDate(exits.getCreateDate());
+                return contractRepository.save(newContract);
+            }
+            newContract.setResult(true);
+            return contractRepository.save(newContract);
+        } else {
+            throw new CpfCnpjNotValidException("CPF/CNPJ is not valid!");
+        }
     }
+
+    public Contract editContract(Contract newContract) {
+        var cpfCnpj = newContract.getCpfCnpj();
+        if (validCpfCnpjService.validCpfCnpj(cpfCnpj)) {
+                newContract.setResult(true);
+                return contractRepository.save(newContract);
+        } else {
+            throw new CpfCnpjNotValidException("CPF/CNPJ is not valid!");
+        }
+    }
+
+//    public Mono<Contract> saveNewContract(Contract newContract) {
+//        var cpfCnpj = newContract.getCpfCnpj();
+//        return validCpfCnpjService.validCpfCnpj(cpfCnpj)
+//                .flatMap(isValid -> {
+//                    if (isValid) {
+//                        var exits = contractRepository.findByCpfCnpj(cpfCnpj);
+//                        if (exits != null) {
+//                            newContract.setId(exits.getId());
+//                            newContract.setResult(true);
+//                            newContract.setCreateDate(exits.getCreateDate());
+//                            Mono.just(contractRepository.save(newContract));
+//                        }
+//                        newContract.setResult(true);
+//                        return Mono.just(contractRepository.save(newContract));
+//                    } else {
+//                        throw new CpfCnpjNotValidException("CPF/CNPJ is not valid!");
+//                    }
+//                });
+//    }
 
     public Mono<Contract> updateContract(Contract contract) {
         return Mono.just(contractRepository.save(contract));

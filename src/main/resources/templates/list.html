@@ -7,7 +7,8 @@
 <div layout:fragment="body-page">
         <div class="alert alert-danger" th:if="${#lists.isEmpty(contracts)}">No contracts found!</div>
         <div class="alert alert-primary" th:if="${message != null && message != 'value'}" th:text="${message}"></div>
-        <table id="allContracts" class="table table-striped">
+    <div class="alert alert-success" th:if="${messageOk != null}" th:text="${messageOk}"></div>
+        <table id="allContracts" class="table table-dark">
             <thead>
             <tr>
                 <th width="10%">ID</th>
@@ -45,7 +46,7 @@
                                 <div class="modal-footer">
                                     <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel
                                     </button>
-                                    <a class="btn btn-danger" th:href="@{/contract/delete/{id}(id = ${contract.id})}" type="button">OK</a>
+                                    <a class="btn btn-warning" th:href="@{/contract/delete/{id}(id = ${contract.id})}" type="button">OK</a>
                                 </div>
                             </div>
                         </div>

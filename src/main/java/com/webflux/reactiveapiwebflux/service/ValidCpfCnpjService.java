@@ -7,14 +7,14 @@ import reactor.core.publisher.Mono;
 @Service
 public class ValidCpfCnpjService {
 
-    public Mono<Boolean> validCpfCnpj(String cpfCnpj) {
+    public Boolean validCpfCnpj(String cpfCnpj) {
         if (cpfCnpj.length() == 11) return this.validCpf(cpfCnpj);
         else if (cpfCnpj.length() == 14) return this.validCnpj(cpfCnpj);
         else throw new CpfCnpjNotValidException("Must contain 11 or 14 digits!");
     }
 
-    private Mono<Boolean> validCpf(String CPF) {
-        if (fistCpfValidation(CPF)) return Mono.just(Boolean.FALSE);
+    private Boolean validCpf(String CPF) {
+        if (fistCpfValidation(CPF)) return false;
 
         char dig10, dig11;
         int sm, i, r, num, peso;
@@ -45,13 +45,13 @@ public class ValidCpfCnpjService {
             dig11 = '0';
         else dig11 = (char) (r + 48);
 
-        if ((dig10 == CPF.charAt(9)) && (dig11 == CPF.charAt(10))) return Mono.just(Boolean.TRUE);
-        else return Mono.just(Boolean.FALSE);
+        if ((dig10 == CPF.charAt(9)) && (dig11 == CPF.charAt(10))) return true;
+        else return false;
 
     }
 
-    private Mono<Boolean> validCnpj(String CNPJ) {
-        if (fistCnpjValidation(CNPJ)) return Mono.just(Boolean.FALSE);
+    private Boolean validCnpj(String CNPJ) {
+        if (fistCnpjValidation(CNPJ)) return false;
 
         char dig13, dig14;
         int sm, i, r, num, peso;
@@ -88,8 +88,7 @@ public class ValidCpfCnpjService {
         else dig14 = (char) ((11 - r) + 48);
 
 
-        if ((dig13 == CNPJ.charAt(12)) && (dig14 == CNPJ.charAt(13))) return Mono.just(Boolean.TRUE);
-        else return Mono.just(Boolean.FALSE);
+        return (dig13 == CNPJ.charAt(12)) && (dig14 == CNPJ.charAt(13));
     }
 
     private Boolean fistCpfValidation(String CPF) {

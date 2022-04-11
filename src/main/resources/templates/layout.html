@@ -39,5 +39,25 @@
             crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
             integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+    <script>
+        function addRow() {
+            var tableRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+            var newRow = tableRef.insertRow(tableRef.rows.length);
+            var myHtmlContent = createRowHtml(tableRef.rows.length-1);
+            newRow.innerHTML = myHtmlContent;
+        }
+
+        function createRowHtml(newIndex){
+            return "<td><input type=hidden id=contractItem" + newIndex + ".id name=contractItem["+newIndex+"].id><span></span></td>"
+            +"<td><input id=contractItem" + newIndex + ".nr name=contractItem[" + newIndex + "].numberDuplicata></td>"
+            +"<td><input id=contractItem" + newIndex + ".cashValue name=contractItem[" + newIndex + "].cashValue></td>"
+            +"<td><input name=remove class='btn btn-danger btn-sm' type=button id=contractItemRemove" + newIndex + " value=X onClick=deleteRow(this);></td>"
+        }
+
+        function deleteRow(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById("myTable").deleteRow(i);
+        }
+    </script>
 </body>
 </html>

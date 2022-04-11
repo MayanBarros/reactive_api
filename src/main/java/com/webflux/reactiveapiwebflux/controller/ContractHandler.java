@@ -1,6 +1,7 @@
 package com.webflux.reactiveapiwebflux.controller;
 
 import com.webflux.reactiveapiwebflux.entity.Contract;
+import com.webflux.reactiveapiwebflux.entity.ContractItem;
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.request.ContractRequest;
 import com.webflux.reactiveapiwebflux.service.ContractService;
@@ -15,7 +16,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -62,26 +66,27 @@ public class ContractHandler {
                 .render("list", model);
     }
 
-    public Mono<ServerResponse> saveContract(ServerRequest request) {
-        Map<String, Object> model = new HashMap<>();
-        var reqBodyMono = request.formData();
-        return reqBodyMono.map(this::formDataToContract)
-                .flatMap(contractService::saveNewContract)
-                .publishOn(scheduler)
-                .flatMap(contract -> {
-                    return ServerResponse.status(HttpStatus.CREATED).contentType(MediaType.TEXT_HTML).render("redirect:/contract");
-                })
-                .onErrorResume(CpfCnpjNotValidException.class, e -> {
-                    model.put("message", e.getMessage());
-                    model.put("contract", new Contract());
-                    return ServerResponse.status(HttpStatus.BAD_REQUEST).render("form", model);
-                })
-                .onErrorResume(treatGenericError());
-    }
+//    public Mono<ServerResponse> saveContract(ServerRequest request) {
+//        Map<String, Object> model = new HashMap<>();
+//        var reqBodyMono = request.formData();
+//        return reqBodyMono.map(this::formDataToContract)
+//                .flatMap(contractService::saveNewContract)
+//                .publishOn(scheduler)
+//                .flatMap(contract -> {
+//                    return ServerResponse.status(HttpStatus.CREATED).contentType(MediaType.TEXT_HTML).render("redirect:/contract");
+//                })
+//                .onErrorResume(CpfCnpjNotValidException.class, e -> {
+//                    model.put("message", e.getMessage());
+//                    model.put("contract", new Contract());
+//                    return ServerResponse.status(HttpStatus.BAD_REQUEST).render("form", model);
+//                })
+//                .onErrorResume(treatGenericError());
+//    }
 
     public Mono<ServerResponse> newContract(ServerRequest request) {
         Map<String, Object> model = new HashMap<>();
-        model.put("contract", new Contract());
+        Contract contract = new Contract();
+        model.put("contract", contract);
         return ServerResponse.ok().contentType(MediaType.TEXT_HTML).render("form", model);
     }
 
@@ -171,6 +176,7 @@ public class ContractHandler {
         Contract contract = new Contract();
         var map = formData.toSingleValueMap();
         contract.setCpfCnpj(map.get("cpfCnpj"));
+        //contract.setContractItem(map.get("contractItem"));
         return contract;
     }
 }

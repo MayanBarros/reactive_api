@@ -22,15 +22,15 @@ public class ContractItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "contract_id")
-    private Long contractId;
-
     @Column(name = "number_duplicata")
     private Long numberDuplicata;
 
-    @NotNull
     @Column(name = "cash_value")
     private BigDecimal cashValue;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_id")
+    private Contract contract;
 
     @Override
     public boolean equals(Object o) {

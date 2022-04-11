@@ -7,7 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +44,7 @@ public class Contract {
     @Column(name = "total_cash_value")
     private BigDecimal totalCashValue;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "contract_id")
     private List<ContractItem> contractItem;
 
