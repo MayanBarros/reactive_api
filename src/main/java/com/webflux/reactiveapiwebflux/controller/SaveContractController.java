@@ -20,9 +20,9 @@ public class SaveContractController {
     public String saveContract(Contract contract, final Model model) {
         try {
             contract.setResult(Boolean.TRUE);
-             service.saveNewContract(contract);
+            contract.setCpfCnpj(contract.getCpfCnpj().replaceAll("[^0-9]+", ""));
+            model.addAttribute("contract", service.saveNewContract(contract));
             model.addAttribute("messageOk", "Contract saved successfully!!");
-            model.addAttribute("contract", new Contract());
             return "form";
         } catch (CpfCnpjNotValidException e) {
             model.addAttribute("message", e.getMessage());

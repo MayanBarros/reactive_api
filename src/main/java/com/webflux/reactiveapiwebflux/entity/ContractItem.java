@@ -2,10 +2,12 @@ package com.webflux.reactiveapiwebflux.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
 
 @Builder
@@ -27,6 +29,10 @@ public class ContractItem {
 
     @Column(name = "cash_value")
     private BigDecimal cashValue;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "duplicata_expiration")
+    private Date duplicataExpiration;
 
     @ManyToOne
     @JoinColumn(name = "contract_id")

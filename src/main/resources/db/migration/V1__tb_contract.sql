@@ -1,6 +1,6 @@
 CREATE TABLE tb_contract (
 	id MEDIUMINT AUTO_INCREMENT NOT NULL,
-	total_cash_value BIGINT,
+	total_cash_value DECIMAL(19,2) NOT NULL,
 	cpf_cnpj VARCHAR(14) NOT NULL UNIQUE,
 	create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	update_date TIMESTAMP,

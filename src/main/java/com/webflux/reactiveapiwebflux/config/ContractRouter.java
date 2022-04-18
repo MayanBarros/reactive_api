@@ -37,6 +37,7 @@ public class ContractRouter {
                 .GET("/contract/delete/{id}", handler::deleteContractById)
                 //.GET("/contract/edit/{id}", handler::editContract)
                 .GET("/contract-new", handler::newContract)
+                //.GET("/emprestimo", handler::simularEmprestimo)
                 .build();
     }
 }

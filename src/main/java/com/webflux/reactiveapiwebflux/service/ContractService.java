@@ -53,6 +53,7 @@ public class ContractService {
                 newContract.setId(exits.getId());
                 newContract.setResult(true);
                 newContract.setCreateDate(exits.getCreateDate());
+                newContract.setContractExpiration(exits.getContractExpiration());
                 return contractRepository.save(newContract);
             }
             newContract.setResult(true);

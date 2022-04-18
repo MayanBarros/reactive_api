@@ -15,6 +15,7 @@
                 <th>CPF/CNPJ</th>
                 <th>Created Date</th>
                 <th>Updated Date</th>
+                <th>Contract Expiration</th>
                 <th>Total Contract Value</th>
                 <th>Options</th>
             </tr>
@@ -22,11 +23,55 @@
             <tbody>
             <tr th:each="contract : ${contracts}">
                 <td th:text="${contract.id}"></td>
-                <td th:text="${contract.cpfCnpj}"></td>
-                <td th:text="${#temporals.format(contract.createDate, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${#temporals.format(contract.updateDate, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${contract.totalCashValue}"></td>
+                <td th:text="${contract.cpfCnpj}" class="cpjCnpj"></td>
+                <td th:text="${#dates.format(contract.createDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${#dates.format(contract.updateDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${#dates.format(contract.contractExpiration, 'dd/MM/yyyy')}"></td>
+                <td th:text="${'R$ ' + contract.totalCashValue}"></td>
                 <td>
+                    <a class="btn btn-success btn-sm" data-bs-toggle="modal" th:data-bs-target="|#myList${contract.id}|"
+                       type="button">List Items</a>
+                    <div aria-hidden="true" aria-labelledby="myListLabel" class="modal fade"
+                         tabindex="-1" th:id="|myList${contract.id}|">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title bg-dark" id="myListLabel"> Items of Consult  </h5>
+                                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                            type="button"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <table id='myTable' class="table table-dark">
+                                        <thead>
+                                        <tr>
+                                            <th width="5%">Id</th>
+                                            <th>Number Duplicata</th>
+                                            <th>Cash Value</th>
+                                            <th>Duplicata Expiration</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="item : *{contract.contractItem}">
+                                            <td th:text="${item.id}"></td>
+                                            <td th:text="${item.numberDuplicata}"></td>
+                                            <td th:text="${'R$ ' + item.cashValue}"></td>
+                                            <td th:text="${#dates.format(item.duplicataExpiration, 'dd/MM/yyyy')}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="alert alert-success d-flex justify-content-between" role="alert">
+                                        <label>Total Cash Value:
+                                            <strong th:text="${'R$ ' + contract.totalCashValue}"></strong>
+                                        </label>
+                                    </div>
+
+                                    th:value="${#aggregates.sum(contract.contractItem.![cashValue])}"
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <a class="btn btn-primary btn-sm" th:href="@{/contract/edit/{id}(id = ${contract.id})}" type="button">Edit
                         Consult</a>
                     <a class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="|#myModal${contract.id}|"

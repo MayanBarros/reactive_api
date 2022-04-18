@@ -15,7 +15,11 @@
                 <input th:field="*{id}" type="hidden">
                 <div class="form-group mb-3">
                     <label class="form-label" for="cpfCnpj">CPF/CNPJ:</label>
-                    <input class="form-control" id="cpfCnpj" required th:field="*{cpfCnpj}" type="text">
+                    <input class="form-control cpfCnpj" id="cpfCnpj" required th:field="*{cpfCnpj}" type="text">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="contractExpiration" class="form-label">Contract Expiration:</label>
+                    <input id="contractExpiration" required class="form-control" placeholder="dd-mm-yyyy" type="date" th:field="*{contractExpiration}">
                 </div>
                 <table id='myTable' class="table table-dark">
                     <thead>
@@ -23,16 +27,17 @@
                         <th width="10%">Id</th>
                         <th>Number Duplicata</th>
                         <th>Cash Value</th>
+                        <th>Duplicata Expiration</th>
                         <th>Options</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="item, iter : *{contractItem}">
                         <td th:text="${item.id}" th:field="*{contractItem[__${iter.index}__].id}"></td>
-                        <td><input th:value="${item.numberDuplicata}" th:field="*{contractItem[__${iter.index}__].numberDuplicata}" min="1"/></td>
-                        <td><input th:value="${item.cashValue}" th:field="*{contractItem[__${iter.index}__].cashValue}" min="0.01" step="0.01"/></td>
-                        <td><input name=remove class='btn btn-danger btn-sm' type=button value=X onClick=deleteRow(this);>
-                        </td>
+                        <td><input required th:value="${item.numberDuplicata}" class="form-control" th:field="*{contractItem[__${iter.index}__].numberDuplicata}" min="1"/></td>
+                        <td><input required th:value="${item.cashValue}" class="form-control cash-value" th:field="*{contractItem[__${iter.index}__].cashValue}"/></td>
+                        <td><input required type="date" class="form-control" placeholder="dd-mm-yyyy" th:value="${item.duplicataExpiration}" th:field="*{contractItem[__${iter.index}__].duplicataExpiration}"/></td>
+                        <td><input required name=remove class='btn btn-danger btn-sm' type=button value=X onClick=deleteRow(this);></td>
                     </tr>
                     </tbody>
                 </table>
@@ -41,7 +46,7 @@
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label" for="totalCashValue">Total Cash Value:</label>
-                    <input class="form-control" id="totalCashValue" required th:field="*{totalCashValue}" type="text">
+                    <input class="form-control" readonly="readonly" id="totalCashValue" th:field="*{totalCashValue}"/>
                 </div>
                 <button class="btn btn-primary" type="submit">Save Contract</button>
             </form>

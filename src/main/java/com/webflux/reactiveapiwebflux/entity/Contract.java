@@ -4,11 +4,13 @@ import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,11 +37,11 @@ public class Contract {
 
     @Column(name = "create_date")
     @CreationTimestamp
-    private LocalDateTime createDate;
+    private Date createDate;
 
     @Column(name = "update_date")
     @UpdateTimestamp
-    private LocalDateTime updateDate;
+    private Date updateDate;
 
     @Column(name = "total_cash_value")
     private BigDecimal totalCashValue;
@@ -47,6 +49,11 @@ public class Contract {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "contract_id")
     private List<ContractItem> contractItem;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "contract_expiration")
+    private Date contractExpiration;
+
 
     @Override
     public boolean equals(Object o) {

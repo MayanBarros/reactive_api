@@ -9,55 +9,88 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 <body>
-    <div id="menu">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
-            <div class="container-fluid">
-                <a class="navbar-brand" th:href="@{/contract}">
-                    <img style="width:200px" th:src="@{~/cerc.png}">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link active m-2" aria-current="page" th:href="@{/contract}">Home</a>
-                        <a class="nav-link btn btn-warning m-2" th:href="@{/contract}"><strong style="color:white">All
-                            Contracts</strong></a>
-                        <a class="nav-link btn btn-success m-2" th:href="@{/contract-new}"><strong style="color:white">New
-                            Contract</strong></a>
-                    </div>
+<div id="menu">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/contract}">
+                <img style="width:200px" th:src="@{~/cerc.png}">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link active m-2" aria-current="page" th:href="@{/contract}">Home</a>
+                    <a class="nav-link btn btn-warning m-2" th:href="@{/contract}"><strong style="color:white">All
+                        Contracts</strong></a>
+                    <a class="nav-link btn btn-success m-2" th:href="@{/contract-new}"><strong style="color:white">New
+                        Contract</strong></a>
+                    <a class="nav-link btn btn-danger m-2" th:href="@{/emprestimo}"><strong style="color:white">
+                        Simular Empréstimo</strong></a>
                 </div>
             </div>
-        </nav>
-    </div>
-    <div class="container" layout:fragment="body-page"></div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-            crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-            crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
-            integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
-    <script>
+        </div>
+    </nav>
+</div>
+<div class="container" layout:fragment="body-page"></div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+        integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
+<script type="text/javascript" src="http://1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
+<script>
+
+        $(document).ready(function () {
+
+            $("#myTable").on('input', '.cash-value', function () {
+                var calculated_total_sum = 0;
+
+                $("#myTable .cash-value").each(function () {
+                    var get_textbox_value = $(this).val();
+                    if ($.isNumeric(get_textbox_value)) {
+                        calculated_total_sum += parseFloat(get_textbox_value);
+                    }
+                });
+                document.getElementById('totalCashValue').value = calculated_total_sum;
+            });
+        });
+
+        var options = {
+            onKeyPress: function (cpf, ev, el, op) {
+            var masks = ['000.000.000-000', '00.000.000/0000-00'];
+            $('.cpfCnpj').mask((cpf.length > 14) ? masks[1] : masks[0], op);
+        }
+            }
+
+        $('.cpfCnpj').length > 11 ? $('.cpfCnpj').mask('00.000.000/0000-00', options) : $('.cpfCnpj').mask('000.000.000-00#', options);
+
         function addRow() {
             var tableRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
             var newRow = tableRef.insertRow(tableRef.rows.length);
             var myHtmlContent = createRowHtml(tableRef.rows.length-1);
             newRow.innerHTML = myHtmlContent;
+            $('#myTable').validator('update');
         }
 
         function createRowHtml(newIndex){
             return "<td><input type=hidden id=contractItem" + newIndex + ".id name=contractItem["+newIndex+"].id><span></span></td>"
-            +"<td><input id=contractItem" + newIndex + ".nr name=contractItem[" + newIndex + "].numberDuplicata></td>"
-            +"<td><input id=contractItem" + newIndex + ".cashValue name=contractItem[" + newIndex + "].cashValue></td>"
-            +"<td><input name=remove class='btn btn-danger btn-sm' type=button id=contractItemRemove" + newIndex + " value=X onClick=deleteRow(this);></td>"
+            +"<td><input required class='form-control' id=contractItem" + newIndex + ".nr name=contractItem[" + newIndex + "].numberDuplicata></td>"
+            +"<td><input required class='form-control cash-value' id=contractItem" + newIndex + ".cashValue name=contractItem[" + newIndex + "].cashValue></td>"
+            +"<td><input required type='date' class='form-control' placeholder='dd-mm-yyyy' id=contractItem" + newIndex + ".duplicataExpiration name=contractItem[" + newIndex + "].duplicataExpiration></td>"
+            +"<td><input required name=remove class='btn btn-danger btn-sm' type=button id=contractItemRemove" + newIndex + " value=X onClick=deleteRow(this);></td>"
         }
 
         function deleteRow(r) {
             var i = r.parentNode.parentNode.rowIndex;
             document.getElementById("myTable").deleteRow(i);
         }
-    </script>
+
+</script>
 </body>
 </html>
