@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br" layout:decorate="~{layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://thymeleaf.org"
+>
+<div layout:fragment="body-page">
+    <div class="alert alert-danger" th:if="${message != null}" th:text="${message}"></div>
+    <div class="alert alert-success" th:if="${messageOk != null}" th:text="${messageOk}"></div>
+    <div class="card text-white bg-danger mb-3">
+        <div class="card-header">
+            <h5 class="card-title">Nova Simulação</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" th:action="@{/emprestimo}" th:object="${Emprestimo}">
+                <input th:field="*{id}" type="hidden">
+                <div class="row">
+                    <div class="form-group mb-3 col">
+                        <label class="form-label" for="cpfCnpj">CPF/CNPJ:</label>
+                        <input class="form-control cpfCnpj" id="cpfCnpj" required th:field="*{cpfCnpj}" type="text">
+                    </div>
+                    <div class="form-group mb-3 col">
+                        <label for="dataDeNascimento" class="form-label">Data de Nascimento:</label>
+                        <input id="dataDeNascimento" min="1952-01-01" max="2004-12-31" required class="form-control" placeholder="dd-mm-yyyy" type="date" th:field="*{dataDeNascimento}">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" for="valor">Qual o valor ? (R$):</label>
+                    <input type="number" class="form-control" id="valor" th:field="*{valor}" placeholder="Informe um Valor entre R$ 100.00 e R$ 1000.00 " step="0.01" min="100.00" max="1000.00"/>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="diasParaPagar">Em quantos dias gostaria de começar a pagar ?</label>
+                    <select class="form-control" id="diasParaPagar" th:field="*{diasParaPagar}">
+                        <option th:value="0">0</option>
+                        <option th:value="30">30</option>
+                        <option th:value="60">60</option>
+                        <option th:value="90">90</option>
+                    </select>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="parcelas">Em quantas parcelas pretende pagar ?</label>
+                    <select th:field="*{parcelas}" class="form-control" id="parcelas">
+                        <option th:each="i : ${#numbers.sequence(1, 24)}" th:value="${i}" th:text="${i}">
+                        </option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" type="submit">Simular Empréstimo</button>
+            </form>
+        </div>
+    </div>
+    <div th:if="${parcelaList != null}">
+        <table id="allContracts" class="table table-dark">
+            <thead>
+            <tr>
+                <th width="10%">ID</th>
+                <th>Mês</th>
+                <th>Dia do Pagamento</th>
+                <th>Prestação Mensal</th>
+                <th>Amortização</th>
+                <th>Juros Mensal</th>
+                <th>Saldo Devedor</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="parcela : ${parcelaList}">
+                <td th:text="${parcela.id}"></td>
+                <td th:text="${parcela.mes}"></td>
+                <td th:text="${#temporals.format(parcela.data, 'dd-MM-yyyy')}"></td>
+                <td th:text="${'R$ ' + parcela.prestacao}"></td>
+                <td th:text="${'R$ ' + parcela.amortizacao}"></td>
+                <td th:text="${'R$ ' + parcela.juros}"></td>
+                <td th:text="${'R$ -' + parcela.saldoDevedor}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</html>

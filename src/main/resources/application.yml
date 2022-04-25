@@ -17,3 +17,9 @@ jdbc:
   connection:
     pool:
       size: 5
+
+
+tax:
+  pattern:
+    monthly: 0.00948879293
+    annual: 12

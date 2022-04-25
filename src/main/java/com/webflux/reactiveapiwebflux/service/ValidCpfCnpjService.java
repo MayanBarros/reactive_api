@@ -2,12 +2,12 @@ package com.webflux.reactiveapiwebflux.service;
 
 import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 @Service
 public class ValidCpfCnpjService {
 
     public Boolean validCpfCnpj(String cpfCnpj) {
+        cpfCnpj = cpfCnpj.replaceAll("[^0-9]+", "");
         if (cpfCnpj.length() == 11) return this.validCpf(cpfCnpj);
         else if (cpfCnpj.length() == 14) return this.validCnpj(cpfCnpj);
         else throw new CpfCnpjNotValidException("Must contain 11 or 14 digits!");

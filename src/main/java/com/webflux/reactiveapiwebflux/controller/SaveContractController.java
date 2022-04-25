@@ -20,7 +20,6 @@ public class SaveContractController {
     public String saveContract(Contract contract, final Model model) {
         try {
             contract.setResult(Boolean.TRUE);
-            contract.setCpfCnpj(contract.getCpfCnpj().replaceAll("[^0-9]+", ""));
             model.addAttribute("contract", service.saveNewContract(contract));
             model.addAttribute("messageOk", "Contract saved successfully!!");
             return "form";
