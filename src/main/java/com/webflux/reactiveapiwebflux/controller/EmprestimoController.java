@@ -20,18 +20,10 @@ public class EmprestimoController {
     @Autowired
     private EmprestimoService service;
 
-
-    @GetMapping("teste")
-    public String formularioEmprestimoTeste(final Model model){
-        var teste = this.service.pmt(new BigDecimal("0.9489"), 12, new BigDecimal("1000.00"));
-        model.addAttribute("Emprestimo", new Emprestimo());
-        model.addAttribute("teste", teste);
-        return "simular-emprestimo";
-    }
-
     @GetMapping
     public String formularioEmprestimo(final Model model){
         model.addAttribute("Emprestimo", new Emprestimo());
+        model.addAttribute("taxa", this.service.taxaAnualMenor);
         return "simular-emprestimo";
     }
 

@@ -6,7 +6,6 @@ import com.webflux.reactiveapiwebflux.exception.CpfCnpjNotValidException;
 import com.webflux.reactiveapiwebflux.exception.DataDeNascimentoNotValidException;
 import com.webflux.reactiveapiwebflux.exception.ValorNotValidException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,11 +20,8 @@ import java.util.*;
 @Service
 public class EmprestimoService {
 
-    @Value("${tax.pattern.monthly}")
-    private BigDecimal taxPatternMonthly;
-
-    @Value("${tax.pattern.annual}")
-    private BigDecimal taxPatternAnnual;
+    @Autowired
+    public BigDecimal taxaAnualMenor;
 
     BigDecimal jurosComRiscoAnual = BigDecimal.ZERO;
     BigDecimal jurosComRiscoMensal = BigDecimal.ZERO;
@@ -68,11 +64,11 @@ public class EmprestimoService {
         if (idade < 18) {
             throw new DataDeNascimentoNotValidException("Você tem menos de 18 anos e não pode fazer empréstimo!");
         } else if (idade == 18) {
-            return taxPatternAnnual.multiply(RISCO_18);
+            return taxaAnualMenor.multiply(RISCO_18);
         } else if (idade <= 45) {
-            return taxPatternAnnual.multiply(RISCO_19_45);
+            return taxaAnualMenor.multiply(RISCO_19_45);
         } else if (idade <= 69) {
-            return taxPatternAnnual.multiply(RISCO_46_69);
+            return taxaAnualMenor.multiply(RISCO_46_69);
         } else throw new DataDeNascimentoNotValidException("Você tem 70 anos e não pode fazer empréstimo!");
     }
 
@@ -137,11 +133,11 @@ public class EmprestimoService {
             var amortizacao = valorDaPrestacaoMensal.subtract(juros);
 
             if (!Objects.equals(parcelaList.get(0).getSaldoDevedor(), emprestimo.getValor())) {
-                var prestacaoMensalSemJurosDeCarencia = emprestimo.getValor().divide(new BigDecimal(12), 2, RoundingMode.HALF_UP);
+                var prestacaoMensalSemJurosDeCarencia = pmt(jurosComRiscoMensal, emprestimo.getParcelas(), emprestimo.getValor());
                 amortizacao = prestacaoMensalSemJurosDeCarencia.subtract(juros);
             }
 
-            if (i == parcelas && !saldoDevedorMesAtual.equals(BigDecimal.ONE)) {
+            if (i == parcelas && !saldoDevedorMesAtual.equals(BigDecimal.ZERO)) {
                 valorDaPrestacaoMensal = valorDaPrestacaoMensal.add(saldoDevedorMesAtual);
                 saldoDevedorMesAtual = BigDecimal.ZERO;
             }

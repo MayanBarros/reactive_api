@@ -5,6 +5,7 @@
 >
 <div layout:fragment="body-page">
     <div class="alert alert-danger" th:if="${message != null}" th:text="${message}"></div>
+    <div class="alert alert-danger" th:if="${taxa != null}" th:text="${'Taxa de Juros Anual ' + taxa + '%'}"></div>
     <div class="alert alert-success" th:if="${messageOk != null}" th:text="${messageOk}"></div>
     <div class="card text-white bg-danger mb-3">
         <div class="card-header">
@@ -55,8 +56,8 @@
                 <th>Mês</th>
                 <th>Dia do Pagamento</th>
                 <th>Prestação Mensal</th>
-                <th>Amortização</th>
                 <th>Juros Mensal</th>
+                <th>Amortização</th>
                 <th>Saldo Devedor</th>
             </tr>
             </thead>
@@ -65,13 +66,17 @@
                 <td th:text="${parcela.id}"></td>
                 <td th:text="${parcela.mes}"></td>
                 <td th:text="${#temporals.format(parcela.data, 'dd-MM-yyyy')}"></td>
-                <td th:text="${'R$ ' + parcela.prestacao}"></td>
-                <td th:text="${'R$ ' + parcela.amortizacao}"></td>
-                <td th:text="${'R$ ' + parcela.juros}"></td>
-                <td th:text="${'R$ -' + parcela.saldoDevedor}"></td>
+                <td th:text="${#numbers.formatCurrency(parcela.prestacao)}"></td>
+                <td th:text="${#numbers.formatCurrency(parcela.juros)}"></td>
+                <td th:text="${#numbers.formatCurrency(parcela.amortizacao)}"></td>
+                <td th:text="${#numbers.formatCurrency(parcela.saldoDevedor)}"></td>
             </tr>
             </tbody>
         </table>
+        <div class="alert alert-success d-flex justify-content-between" role="alert">
+            <label>Valor Final:</label>
+            <strong th:text="${#numbers.formatCurrency(#aggregates.sum(parcelaList.![prestacao]) * -1)}"></strong>
+        </div>
     </div>
 </div>
 </html>
